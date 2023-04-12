@@ -1,5 +1,5 @@
 # Creación Multimedia
-## Proyecto de generación de imágenes en Processing
+## Proyecto de generación de audio en Processing
 
 Integrantes:
 - Esteban Rojas Henao
