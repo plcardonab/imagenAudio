@@ -3,6 +3,10 @@ import processing.sound.*;
 
 // A Sample object (for a sound)
 SoundFile song;
+SoundFile kick;
+SoundFile ethereal;
+
+Amplitude analyzer;
 
 // Estrellas
 int NUM_STARS = 50;
@@ -67,7 +71,18 @@ int checkDescuadre1 = 0;
 void setup() {
   
   song = new SoundFile(this, "breathy-vocal-yo.wav");
-  song.play();
+  //song.play();
+  
+  kick = new SoundFile(this, "KickFilter.wav");
+  kick.loop();
+  
+  ethereal = new SoundFile(this, "ethereal-chord.mp3");
+  
+  // create a new Amplitude analyzer
+  analyzer = new Amplitude(this);
+
+  // Patch the input to an volume analyzer
+  analyzer.input(kick);
   
   // Cambio modo de color
   
@@ -242,6 +257,12 @@ void draw() {
     circle1.setFinal(centroX, centroY, circle2.c);
     circle2.setFinal(centroX, centroY, circle1.c);
     
+    // Reproduce el sonido de la orbita
+    if (ethereal.isPlaying()) {
+      ethereal.stop();
+    }
+    ethereal.play();
+    
     // Activa la rotacion
         
     cur_rotating = true;
@@ -263,6 +284,8 @@ void draw() {
     // Cambia el alpha de las orbitas
     OrbitItem orbit = orbitItems.get(orbitItems.size()-1);
     orbit.changeOpacity();
+    
+    orbit.changeVolume();
     
     // Si ya termino la rotacion, escoge otro par de circulos
     
@@ -349,10 +372,12 @@ class CircleItem{
   
   public void display(){
     
+    float vol = analyzer.analyze();
+    
     noStroke();
         
     fill(this.c, saturation, brightness);
-    circle(this.xPos, this.yPos, 40);
+    circle(this.xPos, this.yPos, 40 + vol*50);
     
   }
   
@@ -477,6 +502,9 @@ public class OrbitItem{
   
   public float alpha = 0;
   public float alphaChange = 512 / float(speed);
+  
+  public float volume = 0;
+  public float volumeChange = 2 / float(speed);
     
   public OrbitItem(float centroX, float centroY, float radio, float hue){
     
@@ -501,6 +529,16 @@ public class OrbitItem{
       
     }
     
+  }
+  
+  public void changeVolume() {
+    this.volume += this.volumeChange;
+    
+    if (this.volume > 1 || this.volume < 0) {
+      this.volumeChange *= -1;
+    }
+    
+    ethereal.amp(this.volume);
   }
   
   public void display(){
