@@ -161,25 +161,25 @@ void draw() { //<>//
   
   float acc = map(mouseX, 0, width, 0.005f, 0.2f);
   
-  if (playing1 == true) {
+  if (playing4 == true) {
     
-  for (Star star : stars) {
-      
-      star.corre();
-      star.update(acc);
-  }
-  
-  stars.removeIf(star -> !star.is_active());
-  
-  while (stars.size() < NUM_STARS) {
-      
-      stars.add(new Star(random(width), random(height)));
-  }
+    for (Star star : stars) {
+        
+        star.corre();
+        star.update(acc);
+    }
+    
+    stars.removeIf(star -> !star.is_active());
+    
+    while (stars.size() < NUM_STARS) {
+        
+        stars.add(new Star(random(width), random(height)));
+    }
   }
   
   translate(centerXTranslate, centerYTranslate);
   
-  if (mousePressed == true){
+  if (mousePressed == true && playing1 == true){
         
     if (mouseX > bound_min && mouseX < bound_max){
 
@@ -333,8 +333,8 @@ void draw() { //<>//
   
   if (mousePressed == false){
     
-    float volume2 = map(mouseX, 0, width, 0, 1);
-    song2.amp(volume2);
+    float volume4 = map(mouseX, 0, width, 0, 1);
+    song4.amp(volume4);
     
   }
   

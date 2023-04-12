@@ -48,7 +48,7 @@ public class OrbitItem{
       this.volumeChange *= -1;
     }
     
-    song2.amp(this.volume);
+    song3.amp(this.volume);
   }
   
   public void display(){
