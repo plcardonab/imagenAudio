@@ -201,7 +201,7 @@ void draw() { //<>//
     
      float temp = random(0, 1);
       
-      speed = steps/1.8;
+      speed = steps/1.5;
   
     
     checkDescuadre ++;
