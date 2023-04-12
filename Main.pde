@@ -2,7 +2,8 @@
 import processing.sound.*;
 
 // A Sample object (for a sound)
-SoundFile song;
+SoundFile song1;
+SoundFile song2;
 
 // Estrellas
 int NUM_STARS = 50;
@@ -64,10 +65,22 @@ float diametro = 0;
 int checkDescuadre = 0;
 int checkDescuadre1 = 0;
 
+// Para la traslacion del sistema
+int centerXTranslate;
+int centerYTranslate;
+
+int circle_size = 40;
+
+int bound_min;
+int bound_max;
+
 void setup() {
   
-  song = new SoundFile(this, "breathy-vocal-yo.wav");
-  song.play();
+  song1 = new SoundFile(this, "peaches.wav");
+  song1.loop();
+  
+  song2 = new SoundFile(this, "peaches_loud.wav");
+  song2.loop();
   
   // Cambio modo de color
   
@@ -110,22 +123,19 @@ void setup() {
   }
   
   frameRate(100);
+  
+  centerXTranslate = width/2;
+  centerYTranslate = height/2;
+  
+  bound_min = int(radio) + circle_size;
+  bound_max = width - int(radio) - circle_size;
+
 }
 
-boolean playing = true;
+boolean playing1 = true;
+boolean playing2 = true;
 
-void mousePressed() {
-  //if (song.isPlaying()) {
-  if (playing) {
-    song.stop();
-    playing = false;
-  } else {
-    song.play();
-    playing = true;
-  }
-}
-
-void draw() {
+void draw() { //<>//
   
   background(0);
   
@@ -146,16 +156,30 @@ void draw() {
       stars.add(new Star(random(width), random(height)));
   }
   
-  translate(width/2, height/2);
+  translate(centerXTranslate, centerYTranslate);
+  
+  if (mousePressed == true){
+        
+    if (mouseX > bound_min && mouseX < bound_max){
+
+      centerXTranslate = mouseX;
+      
+    }
+    
+    if (mouseY > bound_min && mouseY < bound_max){
+
+      centerYTranslate = mouseY;
+      
+    }  
+    
+  }
   
   // Si no hay nada rotando actualmente
   
   if (cur_rotating == false){
     
     float temp = random(0, 1);
-    
-    println(temp);
-    
+        
     if (temp <= 0.2) {
       
       speed = steps/4;
@@ -215,8 +239,6 @@ void draw() {
           || abs(circle1.posicion-circle2.posicion) == int(num_circles/2)
           || abs(circle1.posicion-circle2.posicion) == int(num_circles/2)+1)){
             
-      println("Entra con", circle1.posicion, "y con", circle2.posicion);
-      
       circleId1 = int(random(0, num_circles));
       circleId2 = int(random(0, num_circles));
       
@@ -293,272 +315,58 @@ void draw() {
     item.display();
     
   }
-}
+  
+  // Set the volume to a range between 0 and 1.0
+  float volume = map(centerXTranslate, bound_min, bound_max, 0, 1);
+  song1.amp(volume);
 
-class CircleItem{
+  // Set the rate to a range between 0.1 and 4
+  // Changing the rate alters the pitchf
+  float speed = 2 - map(centerYTranslate, bound_min, bound_max, 0, 1.5);
+  
+  song1.rate(speed);
+  
+  // Set the volume to a range between 0 and 1.0
+  
+  if (mousePressed == false){
     
-  // Contador pasos
-  
-  public int counter = 0;
-  
-  // Posicion actual
-  public int xPos = 0;
-  public int yPos = 0;
-    
-  public float angulo = 0;
-  
-  // Centro orbita
-  
-  public float centroX = 0;
-  public float centroY = 0;
-  
-  public float radio = 0;
-  
-  // Saltos
-  
-  public float saltoH = 0;
-  
-  // Colores
-  
-  private float c;
-  private float cEnd;
-  private float cInit;
-  
-  // Posicion actual del circulo
-  
-  private int posicion = 0;
-  
-  // Comprobante si ya hizo la transicion
-  
-  public boolean check = true;
-  
-  // Para dibujar cada circulo
-  
-  public CircleItem(int xPos, int yPos, float c){
-        
-    this.xPos = xPos;
-    this.yPos = yPos;
-    this.c = c+1-1;
-    this.cInit = c+1-1;
-    
-    items.add(this);
-    
-    this.posicion = items.indexOf(this);
+    float volume2 = map(mouseX, 0, width, 0, 1);
+    song2.amp(volume2);
     
   }
   
-  public void display(){
-    
-    noStroke();
-        
-    fill(this.c, saturation, brightness);
-    circle(this.xPos, this.yPos, 40);
-    
-  }
-  
-  public void setFinal(float centroX, float centroY, float new_c){    
-
-    this.cEnd = new_c+1-1;
-   
-    this.centroX = centroX;
-    this.centroY = centroY;
-     
-    this.angulo = atan2(this.yPos - this.centroY, this.xPos - this.centroX);
-    
-    this.radio = dist(this.xPos, this.yPos, this.centroX, this.centroY);
-     
-    this.check = true;
-     
-    this.saltoH = (this.cEnd - this.c) / float(speed);
-    
-  }
-  
-  public void actualizaColor(){
-    
-    if (this.c != this.cEnd){
-      
-      if (this.c < this.cEnd && this.c + this.saltoH > this.cEnd) {
-        this.c = this.cEnd;
-      }
-      
-      else if (this.c > this.cEnd && this.c + this.saltoH < this.cEnd) {
-        this.c = this.cEnd;
-      }
-      
-      else {
-        
-        this.c += this.saltoH;
-        
-      }
-      
-    }
-    
-    //this.c = lerpColor(color(this.cInit, saturation, brightness), color(this.cEnd, saturation, brightness), this.counter*this.saltoH/100);
-        
-  }
-  
-  // Calcula la pos de X y Y actuales
-  
-  public void actualizaPosicion(){
-    
-    this.angulo += PI/speed;
-            
-    this.xPos = int(this.centroX + this.radio*cos(this.angulo));
-    this.yPos = int(this.centroY + this.radio*sin(this.angulo));
-    
-  }
-  
-  public void actualiza(){
-    
-    this.actualizaColor();
-    this.actualizaPosicion();
-    
-    this.counter ++;
-    
-    if (this.counter == speed){
-            
-      this.counter = 0;
-      
-      this.check = false;
-      
-      this.ajustaPosicion();
-      
-    }
-    
-  }
-  
-  public void ajustaPosicion(){
-    
-    int xCercano = this.xPos;
-    
-    int yCercano = this.yPos;
-    
-    float distCercana = radio;
-    
-    int indexCercano = 0;
-      
-    for (int i=0; i<posicionesIniciales.length; i++){
-      
-      float distActual = dist(this.xPos, this.yPos, posicionesIniciales[i][0], posicionesIniciales[i][1]);
-      
-      if (distActual < distCercana || distActual == 0){
-        
-        distCercana = distActual;
-        
-        xCercano = posicionesIniciales[i][0];
-        yCercano = posicionesIniciales[i][1];
-        
-        indexCercano = i;
-        
-      }
-    
-    }
-    
-  this.xPos = xCercano;
-  this.yPos = yCercano;
-  
-  this.posicion = indexCercano;
-  
-  }
-  
-}
-
-public class OrbitItem{
-  
-  public float centroX = 0;
-  public float centroY = 0;
-  public float radio = 0;
-  
-  public float hue = 0;
-  
-  public float saltoS = 0;
-  
-  public float sat = 0;
-  
-  public float alpha = 0;
-  public float alphaChange = 512 / float(speed);
-    
-  public OrbitItem(float centroX, float centroY, float radio, float hue){
-    
-    this.centroX = centroX;
-    this.centroY = centroY;
-    this.radio = radio;
-    
-    this.hue = hue;
-    
-    this.saltoS = float(saturation) / float(speed);
-    
-    orbitItems.add(this);
-    
-  }
-  
-  public void changeOpacity() {
-    
-    this.alpha += this.alphaChange;
-    
-    if (this.alpha > 255 || this.alpha < 0) {
-      this.alphaChange *= -1;
-      
-    }
-    
-  }
-  
-  public void display(){
-    
-    this.sat += this.saltoS;
-        
-    strokeWeight(3);
-    stroke(this.hue, this.sat, brightness, this.alpha);
-    noFill();
-        
-    circle(centroX, centroY, radio);
-    
-    noStroke();
-  
-  }
-}
-
-class Star {
-
-    PVector pos;
-    PVector prev_pos;
-    PVector vel;
-    float ang;
-    
-    Star(float x, float y) {
-        
-        pos = new PVector(x, y);
-        prev_pos = new PVector(x, y);
-        vel = new PVector(0, 0);
-        ang = atan2(y - (height/2), x - (width/2));
-    }
-    
-    boolean is_active() {
-        
-        return on_screen(prev_pos.x, prev_pos.y);
-    }
-    
-    void update(float acc) {
-        
-        vel.x += cos(ang) * acc;
-        vel.y += sin(ang) * acc;
-        
-        prev_pos.x = pos.x;
-        prev_pos.y = pos.y;
-        
-        pos.x += vel.x;
-        pos.y += vel.y;
-    }
-    
-    void corre() {
-      
-        stroke(random(255), random(255), random(255));
-        strokeWeight(3);
-        line(pos.x, pos.y, prev_pos.x, prev_pos.y);
-    }
 }
 
 boolean on_screen(float x, float y) {
     
     return x >= 0 && x <= width && y >= 0 && y <= height;
+}
+
+void keyPressed() {
+  
+  if (key == 'a' || key == 'A'){
+    
+    if (playing1) {
+      song1.stop();
+      playing1 = false;
+    }
+    else {
+      song1.loop();
+      playing1 = true;
+    }
+    
+  }
+  
+  if (key == 's' || key == 'S'){
+    
+    if (playing2) {
+      song2.stop();
+      playing2 = false;
+    }
+    else {
+      song2.loop();
+      playing2 = true;
+    }
+    
+  }
 }
