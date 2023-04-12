@@ -58,7 +58,7 @@ int steps = 180;
 
 // Velocidad de movimiento
 
-int speed = 0;
+float speed = 0;
 
 // Parametros para la circunferencia que se dibuja al fondo
 
@@ -83,7 +83,7 @@ void setup() {
   song1 = new SoundFile(this, "peaches_loud.wav");
   song1.loop();
   
-  song2 = new SoundFile(this, "181425__serylis__guitar-chord.wav");
+  song2 = new SoundFile(this, "533847__tosha73__distortion-guitar-power-chord-e.wav");
   song2.loop();
   
   song3 = new SoundFile(this, "KickFilter.wav");
@@ -200,35 +200,9 @@ void draw() { //<>//
   if (cur_rotating == false && playing3 == true){
     
      float temp = random(0, 1);
-        
-    if (temp <= 0.2) {
       
-      speed = steps/4;
-      
-    }
-    else if (temp <= 0.4) {
-      
-      speed = steps/3;
-      
-    }
-    
-    else if (temp <= 0.6) {
-      
-      speed = steps/2;
-      
-    }
-    
-    else if (temp <= 0.8) {
-      
-      speed = steps;
-      
-    }
-    
-    else {
-      
-      speed = steps*2;
-      
-    }
+      speed = steps/1.8;
+  
     
     checkDescuadre ++;
     checkDescuadre1 ++;
@@ -287,10 +261,7 @@ void draw() { //<>//
     circle2.setFinal(centroX, centroY, circle1.c);
     
      // Reproduce el sonido de la orbita
-    if (song2.isPlaying()) {
-      song2.stop();
-    }
-    song2.play();
+   
     
     // Activa la rotacion
     

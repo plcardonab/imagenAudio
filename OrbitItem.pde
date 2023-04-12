@@ -14,7 +14,7 @@ public class OrbitItem{
   public float alphaChange = 512 / (speed);
   
   public float volume = 0;
-  public float volumeChange = 2 / float(speed);
+  public float volumeChange = 2 / (speed);
     
   public OrbitItem(float centroX, float centroY, float radio, float hue){
     
